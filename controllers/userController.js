@@ -1,93 +1,41 @@
-const User = require('../models/User');
+const UserService = require('../services/UserService');
 
 exports.getAllUsers = async (req, res) => {
-  try {
-    const users = await User.findAll();
-    res.json(users);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Greška na serveru.' });
-  }
+  const users = await UserService.getAllUsers();
+  res.json(users);
 };
 
 exports.getUserById = async (req, res) => {
-  const userId = req.params.id;
+  const user = await UserService.getUserById(req.params.id);
+  if (!user) return res.status(404).json({ message: 'Korisnik nije pronađen.' });
+  res.json(user);
+};
 
-  try {
-    const user = await User.findByPk(roomId);
-    if (!user) {
-      return res.status(404).json({ message: 'Korisnik nije pronađena.' });
-    }
-    res.json(user);
-  } catch (err) {
-    console.error('Greška prilikom dohvaćanja korisnika:', err);
-    res.status(500).json({ message: 'Greška na serveru.' });
-  }
+exports.createUser = async (req, res) => {
+  const user = await UserService.createUser(req.body);
+  res.status(201).json(user);
 };
 
 exports.updateUser = async (req, res) => {
-  const userId = req.params.id;
-  const { firstName, lastName } = req.body;
-
-  try {
-    const user = await User.findByPk(userId);
-
-    if (!user) {
-      return res.status(404).json({ message: 'Korisnik nije pronađen.' });
-    }
-
-    user.firstName = firstName ?? user.firstName;
-    user.lastName = firstName ?? user.lastName;
-
-    await user.save();
-
-    res.json({ message: 'Korisnik je ažuriran.', user });
-  } catch (err) {
-    console.error('Greška prilikom ažuriranja korisnikovih podataka:', err);
-    res.status(500).json({ message: 'Greška na serveru.' });
-  }
+  const updatedUser = await UserService.updateUser(req.params.id, req.body);
+  if (!updatedUser) return res.status(404).json({ message: 'Korisnik nije pronađen.' });
+  res.json(updatedUser);
 };
 
 exports.deleteUser = async (req, res) => {
-  const userId = req.params.id;
-  try {
-    const user = await User.findByPk(userId);
-
-    if (!user) {
-      return res.status(404).json({ message: 'Korisnik nije pronađena.' });
-    }
-    await user.destroy();
-
-    res.json({ message: 'Korisnik je uspješno obrisan.' });
-  } catch (err) {
-    console.error('Greška prilikom brisanja korisnika:', err);
-    res.status(500).json({ message: 'Greška na serveru.' });
-  }
+  const deletedUser = await UserService.deleteUser(req.params.id);
+  if (!deletedUser) return res.status(404).json({ message: 'Korisnik nije pronađen.' });
+  res.json({ message: 'Korisnik obrisan.' });
 };
 
 exports.updateUserRole = async (req, res) => {
-  const userId = req.params.id;
   const { role } = req.body;
-  const validRoles = ['user', 'admin'];
-
-  if (!validRoles.includes(role)) {
-    return res.status(400).json({ message: 'Nevažeća uloga. Dozvoljene vrijednosti su "user" ili "admin".' });
+  if (!['admin', 'user'].includes(role)) {
+    return res.status(400).json({ message: 'Uloga mora biti "admin" ili "user".' });
   }
 
-  try {
-    const user = await User.findByPk(userId);
+  const updatedUser = await UserService.updateRole(req.params.id, role);
+  if (!updatedUser) return res.status(404).json({ message: 'Korisnik nije pronađen.' });
 
-    if (!user) {
-      return res.status(404).json({ message: 'Korisnik nije pronađen.' });
-    }
-
-    user.role = role;
-
-    await user.save();
-
-    res.json({ message: 'Korisnik je ažuriran.', user });
-  } catch (err) {
-    console.error('Greška prilikom ažuriranja korisnikovih podataka:', err);
-    res.status(500).json({ message: 'Greška na serveru.' });
-  }
+  res.json({ message: 'Uloga ažurirana.', user: updatedUser });
 };

@@ -1,81 +1,63 @@
-const Room = require('../models/Room');
+const RoomService = require('../services/RoomService');
 
 exports.getAllRooms = async (req, res) => {
   try {
-    const rooms = await Room.findAll();
+    const rooms = await RoomService.getAllRooms();
     res.json(rooms);
   } catch (err) {
-    console.error(err);
+    console.error('Greška pri dohvaćanju soba:', err);
+    res.status(500).json({ message: 'Greška na serveru.' });
+  }
+};
+
+exports.getRoomById = async (req, res) => {
+  try {
+    const room = await RoomService.getRoomById(req.params.id);
+    if (!room) return res.status(404).json({ message: 'Soba nije pronađena.' });
+
+    res.json(room);
+  } catch (err) {
+    console.error('Greška pri dohvaćanju sobe:', err);
     res.status(500).json({ message: 'Greška na serveru.' });
   }
 };
 
 exports.createRoom = async (req, res) => {
   const { name, capacity } = req.body;
+
   if (!name || !capacity) {
     return res.status(400).json({ message: 'Nedostaju obavezna polja.' });
   }
+
   try {
-    const newRoom = await Room.create({ name, capacity });
+    const newRoom = await RoomService.createRoom({ name, capacity });
     res.status(201).json(newRoom);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Greška na serveru.' });
-  }
-};
-
-exports.getRoomById = async (req, res) => {
-  const roomId = req.params.id;
-
-  try {
-    const room = await Room.findByPk(roomId);
-    if (!room) {
-      return res.status(404).json({ message: 'Soba nije pronađena.' });
-    }
-    res.json(room);
-  } catch (err) {
-    console.error('Greška prilikom dohvaćanja sobe:', err);
+    console.error('Greška pri kreiranju sobe:', err);
     res.status(500).json({ message: 'Greška na serveru.' });
   }
 };
 
 exports.updateRoom = async (req, res) => {
-  const roomId = req.params.id;
-  const { name, capacity, location } = req.body;
-
   try {
-    const room = await Room.findByPk(roomId);
+    const updatedRoom = await RoomService.updateRoom(req.params.id, req.body);
+    if (!updatedRoom) return res.status(404).json({ message: 'Soba nije pronađena.' });
 
-    if (!room) {
-      return res.status(404).json({ message: 'Soba nije pronađena.' });
-    }
-
-    room.name = name ?? room.name;
-    room.capacity = capacity ?? room.capacity;
-    room.location = location ?? room.location;
-
-    await room.save();
-
-    res.json({ message: 'Soba je ažurirana.', room });
+    res.json({ message: 'Soba je ažurirana.', room: updatedRoom });
   } catch (err) {
-    console.error('Greška prilikom ažuriranja sobe:', err);
+    console.error('Greška pri ažuriranju sobe:', err);
     res.status(500).json({ message: 'Greška na serveru.' });
   }
 };
 
 exports.deleteRoom = async (req, res) => {
-  const roomId = req.params.id;
   try {
-    const room = await Room.findByPk(roomId);
-
-    if (!room) {
-      return res.status(404).json({ message: 'Soba nije pronađena.' });
-    }
-    await room.destroy();
+    const deletedRoom = await RoomService.deleteRoom(req.params.id);
+    if (!deletedRoom) return res.status(404).json({ message: 'Soba nije pronađena.' });
 
     res.json({ message: 'Soba je uspješno obrisana.' });
   } catch (err) {
-    console.error('Greška prilikom brisanja sobe:', err);
+    console.error('Greška pri brisanju sobe:', err);
     res.status(500).json({ message: 'Greška na serveru.' });
   }
-}
+};

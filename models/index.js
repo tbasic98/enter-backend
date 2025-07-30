@@ -7,6 +7,24 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   logging: false,
 });
 
+sequelize.sync({ force: true })
+  .then(() => {
+    console.log('Sve tablice su sinkronizirane!');
+  })
+  .catch(err => {
+    console.error('Greška prilikom sinkronizacije tablica:', err);
+  });
+
+const User = require('./User')(sequelize);
+const Room = require('./Room')(sequelize);
+const Meeting = require('./Meeting')(sequelize);
+
+Meeting.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+User.hasMany(Meeting, { foreignKey: 'userId', as: 'meetings' });
+
+Meeting.belongsTo(Room, { foreignKey: 'roomId', as: 'room' });
+Room.hasMany(Meeting, { foreignKey: 'roomId', as: 'meetings' });
+
 async function testConnection() {
   try {
     await sequelize.authenticate();
@@ -18,4 +36,9 @@ async function testConnection() {
 
 testConnection();
 
-module.exports = sequelize;
+module.exports = {
+  sequelize,
+  User,
+  Room,
+  Meeting,
+};

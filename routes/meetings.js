@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const authenticateToken = require('../middleware/authMiddleware');
-const meetingsController = require('../controllers/meetingsController');
+const meetingController = require('../controllers/meetingController');
+const { authenticateToken } = require('../middleware');
 
-router.get('/:roomId', authenticateToken, meetingsController.getMeetingsByRoom);
-router.post('/:roomId', authenticateToken, meetingsController.createMeeting);
+router.post('/create', authenticateToken, meetingController.createMeeting);
 
 module.exports = router;
