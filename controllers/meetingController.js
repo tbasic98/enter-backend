@@ -1,5 +1,30 @@
 const meetingService = require('../services/MeetingService');
 
+exports.getAllMeetings = async (req, res) => {
+  try {
+    const meetings = await meetingService.getAllMeetings();
+    res.json(meetings);
+  } catch (err) {
+    console.error('Greška prilikom dohvaćanja sastanaka:', err);
+    res.status(500).json({ message: 'Greška na serveru.' });
+  }
+};
+
+exports.getMeetingById = async (req, res) => {
+  try {
+    const meeting = await meetingService.getMeetingById(req.params.id);
+
+    if (!meeting) {
+      return res.status(404).json({ message: 'Sastanak nije pronađen.' });
+    }
+
+    res.json(meeting);
+  } catch (err) {
+    console.error('Greška prilikom dohvaćanja sastanka:', err);
+    res.status(500).json({ message: 'Greška na serveru.' });
+  }
+};
+
 exports.createMeeting = async (req, res) => {
   const { roomId, startTime, endTime, title } = req.body;
   const userId = req.user.id;
@@ -17,6 +42,36 @@ exports.createMeeting = async (req, res) => {
     }
     console.error('Greška prilikom kreiranja sastanka:', error);
     return res.status(500).json({ message: 'Greška na serveru.' });
+  }
+};
+
+exports.updateMeeting = async (req, res) => {
+  try {
+    const updatedMeeting = await meetingService.updateMeeting(req.params.id, req.body);
+
+    if (!updatedMeeting) {
+      return res.status(404).json({ message: 'Sastanak nije pronađen.' });
+    }
+
+    res.json({ message: 'Sastanak uspješno ažuriran.', meeting: updatedMeeting });
+  } catch (err) {
+    console.error('Greška prilikom ažuriranja sastanka:', err);
+    res.status(400).json({ message: err.message || 'Greška na serveru.' });
+  }
+};
+
+exports.deleteMeeting = async (req, res) => {
+  try {
+    const deleted = await meetingService.deleteMeeting(req.params.id);
+
+    if (!deleted) {
+      return res.status(404).json({ message: 'Sastanak nije pronađen.' });
+    }
+
+    res.json({ message: 'Sastanak uspješno obrisan.' });
+  } catch (err) {
+    console.error('Greška prilikom brisanja sastanka:', err);
+    res.status(500).json({ message: 'Greška na serveru.' });
   }
 };
 
@@ -40,14 +95,42 @@ exports.checkRoomAvailability = async (req, res) => {
   }
 };
 
+exports.getAvailableRooms = async (req, res) => {
+  const { startTime, endTime } = req.query;
+
+  if (!startTime || !endTime) {
+    return res.status(400).json({ message: 'startTime i endTime su obavezni parametri.' });
+  }
+
+  try {
+    const availableRooms = await meetingService.getAvailableRooms(startTime, endTime);
+    res.json(availableRooms);
+  } catch (err) {
+    console.error('Greška prilikom dohvaćanja slobodnih soba:', err);
+    res.status(500).json({ message: 'Greška na serveru.' });
+  }
+};
+
+
+exports.getMeetingsByUserId = async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    const meetings = await meetingService.getMeetingsByUserId(userId);
+
+    if (!meetings || meetings.length === 0) {
+      return res.status(404).json({ message: 'Nema sastanaka za ovog korisnika.' });
+    }
+
+    res.json(meetings);
+  } catch (err) {
+    console.error('Greška prilikom dohvaćanja sastanaka korisnika:', err);
+    res.status(500).json({ message: 'Greška na serveru.' });
+  }
+};
+
+
 //TODO: Implement other meetingController methods such as:
-// POST /meetings/create - Kreiraj sastanak
-// GET /meetings - Dohvati sve sastanke
-// GET /meetings/:id - Dohvati detalje nekog sastanka
-// PUT /meetings/:id - Ažuriraj sastanak
-// DELETE /meetings/:id - Obrišite sastanak
-// GET /rooms/available - Dohvati sobe dostupne u zadanom vremenskom intervalu
-// GET /users/:id/meetings - Dohvati sastanke za određenog korisnika
 
 // Napraviti paginaciju i search za usere, filter prema roli
 // Paginaciju i search za sobe
