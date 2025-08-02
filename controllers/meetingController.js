@@ -2,7 +2,13 @@ const meetingService = require('../services/MeetingService');
 
 exports.getAllMeetings = async (req, res) => {
   try {
-    const meetings = await meetingService.getAllMeetings();
+    const { startTime, endTime } = req.query;
+
+    const meetings = await meetingService.getAllMeetings({
+      startTime,
+      endTime
+    });
+
     res.json(meetings);
   } catch (err) {
     console.error('Greška prilikom dohvaćanja sastanaka:', err);
@@ -128,9 +134,3 @@ exports.getMeetingsByUserId = async (req, res) => {
     res.status(500).json({ message: 'Greška na serveru.' });
   }
 };
-
-
-//TODO: Implement other meetingController methods such as:
-
-// Napraviti paginaciju i search za usere, filter prema roli
-// Paginaciju i search za sobe

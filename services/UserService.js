@@ -1,9 +1,45 @@
 const User = require('../models/User');
 
 class UserService {
-  static async getAllUsers() {
-    return await User.findAll();
+  static async getAllUsers({ page = 1, limit = 10, search = '', role }) {
+    const nameParts = search.trim().split(' ').filter(Boolean);
+    let whereClause = {};
+
+    if (nameParts.length === 1) {
+      whereClause = {
+        [Op.or]: [
+          { firstName: { [Op.iLike]: `%${nameParts[0]}%` } },
+          { lastName: { [Op.iLike]: `%${nameParts[0]}%` } }
+        ]
+      };
+    } else if (nameParts.length >= 2) {
+      whereClause = {
+        firstName: { [Op.iLike]: `%${nameParts[0]}%` },
+        lastName: { [Op.iLike]: `%${nameParts[nameParts.length - 1]}%` }
+      };
+    }
+
+    if (role) {
+      whereClause.role = role;
+    }
+
+    const offset = (page - 1) * limit;
+
+    const { rows: users, count: total } = await User.findAndCountAll({
+      where: whereClause,
+      limit: parseInt(limit, 10),
+      offset: parseInt(offset, 10),
+      order: [['lastName', 'ASC'], ['firstName', 'ASC']],
+    });
+
+    return {
+      users,
+      total,
+      page: parseInt(page, 10),
+      totalPages: Math.ceil(total / limit),
+    };
   }
+  
 
   static async getUserById(id) {
     return await User.findByPk(id);

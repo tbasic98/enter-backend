@@ -1,8 +1,15 @@
 const UserService = require('../services/UserService');
 
 exports.getAllUsers = async (req, res) => {
-  const users = await UserService.getAllUsers();
-  res.json(users);
+  const { page = 1, limit = 10, search = '', role } = req.query;
+
+  try {
+    const result = await UserService.getAllUsers({ page, limit, search, role });
+    res.json(result);
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.status(500).json({ message: 'Greška na serveru.' });
+  }
 };
 
 exports.getUserById = async (req, res) => {

@@ -1,12 +1,14 @@
 const RoomService = require('../services/RoomService');
 
 exports.getAllRooms = async (req, res) => {
+  const { page = 1, limit = 10, search = '' } = req.query;
+
   try {
-    const rooms = await RoomService.getAllRooms();
-    res.json(rooms);
+    const result = await RoomService.getAllRooms({ page, limit, search });
+    res.json(result);
   } catch (err) {
-    console.error('Greška pri dohvaćanju soba:', err);
-    res.status(500).json({ message: 'Greška na serveru.' });
+    console.error('Error fetching rooms:', err);
+    res.status(500).json({ message: 'Server error.' });
   }
 };
 

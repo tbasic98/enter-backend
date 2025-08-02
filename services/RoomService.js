@@ -1,8 +1,28 @@
 const Room = require('../models/Room');
 
 class RoomService {
-  static async getAllRooms() {
-    return await Room.findAll();
+  static async getAllRooms({ page = 1, limit = 10, search = '' }) {
+    const offset = (page - 1) * limit;
+
+    let where = {};
+
+    if (search.trim()) {
+      where.name = { [Op.iLike]: `%${search.trim()}%` };
+    }
+
+    const { rows: rooms, count: total } = await Room.findAndCountAll({
+      where,
+      limit: parseInt(limit),
+      offset: parseInt(offset),
+      order: [['name', 'ASC']],
+    });
+
+    return {
+      rooms,
+      total,
+      page: parseInt(page),
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   static async getRoomById(id) {
