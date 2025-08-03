@@ -1,4 +1,4 @@
-const Room = require('../models/Room');
+const { Room } = require('../models');
 
 class RoomService {
   static async getAllRooms({ page = 1, limit = 10, search = '' }) {

@@ -25,14 +25,14 @@ exports.getRoomById = async (req, res) => {
 };
 
 exports.createRoom = async (req, res) => {
-  const { name, capacity } = req.body;
+  const { name, capacity, location } = req.body;
 
   if (!name || !capacity) {
     return res.status(400).json({ message: 'Nedostaju obavezna polja.' });
   }
 
   try {
-    const newRoom = await RoomService.createRoom({ name, capacity });
+    const newRoom = await RoomService.createRoom({ name, capacity, location });
     res.status(201).json(newRoom);
   } catch (err) {
     console.error('Greška pri kreiranju sobe:', err);

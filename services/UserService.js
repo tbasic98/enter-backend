@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const { User } = require('../models');
 
 class UserService {
   static async getAllUsers({ page = 1, limit = 10, search = '', role }) {

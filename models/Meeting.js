@@ -15,11 +15,11 @@ module.exports = (sequelize) => {
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    start_time: {
+    startTime: {
       type: DataTypes.DATE,
       allowNull: false,
     },
-    end_time: {
+    endTime: {
       type: DataTypes.DATE,
       allowNull: false,
     },

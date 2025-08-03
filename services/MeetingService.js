@@ -46,6 +46,7 @@ class MeetingService {
       startTime,
       endTime,
       title,
+      description,
     });
   }
 
