@@ -31,3 +31,16 @@ exports.login = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+
+exports.currentUser = async (req, res) => {
+  try {
+    res.json({ user: req.user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Greška pri dohvaćanju korisnika.' });
+  }
+};
+
+exports.logout = (req, res) => {
+  res.json({ message: 'Odjavljeni ste. Uklonite token na klijentskoj strani.' });
+};
