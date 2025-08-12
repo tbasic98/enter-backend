@@ -24,8 +24,17 @@ exports.login = async (req, res) => {
   }
 
   try {
-    const token = await AuthService.authenticateUser({ email, password });
-    res.json({ message: 'Uspješan login.', token });
+    const {token, user} = await AuthService.authenticateUser({ email, password });
+    res.json({
+      message: 'Uspješan login.',
+      token,
+      user: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        email: user.email
+      }
+    });
   } catch (err) {
     console.error(err);
     res.status(400).json({ message: err.message });

@@ -23,17 +23,20 @@ class AuthService {
   }
 
   static async authenticateUser({ email, password }) {
-    const user = await User.findOne({ where: { email } });
+      const user = await User.findOne({ where: { email } });
     if (!user) throw new Error('Neispravan email ili lozinka.');
 
     const match = await bcrypt.compare(password, user.password);
     if (!match) throw new Error('Neispravan email ili lozinka.');
 
-    return jwt.sign(
+
+    const token = jwt.sign(
       {id: user.id, email: user.email, role: user.role},
       JWT_SECRET,
       {expiresIn: '8h'}
     );
+
+    return {token, user};
   }
 }
 
