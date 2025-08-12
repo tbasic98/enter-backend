@@ -5,6 +5,7 @@ const authRoutes = require('./routes/auth');
 const roomRoutes = require('./routes/rooms');
 const meetingRoutes = require('./routes/meetings');
 const userRoutes = require('./routes/users');
+const cors = require('cors');
 
 const { swaggerUi, swaggerSpec } = require('./config/swagger');
 const { sequelize, User, Room, Meeting } = require('./models/index');
@@ -15,6 +16,11 @@ require('dotenv').config();
 const app = express();
 
 app.use(express.json());
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes)
