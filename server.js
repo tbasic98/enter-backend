@@ -5,7 +5,6 @@ const authRoutes = require('./routes/auth');
 const roomRoutes = require('./routes/rooms');
 const meetingRoutes = require('./routes/meetings');
 const userRoutes = require('./routes/users');
-const cors = require('cors');
 
 const { swaggerUi, swaggerSpec } = require('./config/swagger');
 const { sequelize, User, Room, Meeting } = require('./models/index');
