@@ -170,3 +170,20 @@ exports.getMeetingsByUserId = async (req, res) => {
     res.status(500).json({ message: 'Greška na serveru.' });
   }
 };
+
+exports.getMeetingsByRoomId = async (req, res) => {
+  const roomId = req.params.id;
+
+  try {
+    const meetings = await meetingService.getMeetingsByRoomId(roomId);
+
+    if (!meetings || meetings.length === 0) {
+      return res.status(404).json({ message: 'Nema sastanaka za ovu sobu.' });
+    }
+
+    res.json(meetings);
+  } catch (err) {
+    console.error('Greška prilikom dohvaćanja sastanaka korisnika:', err);
+    res.status(500).json({ message: 'Greška na serveru.' });
+  }
+};

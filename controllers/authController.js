@@ -29,10 +29,12 @@ exports.login = async (req, res) => {
       message: 'Uspješan login.',
       token,
       user: {
+        id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
         username: user.username,
-        email: user.email
+        email: user.email,
+        role: user.role
       }
     });
   } catch (err) {

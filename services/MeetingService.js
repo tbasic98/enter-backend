@@ -126,6 +126,20 @@ class MeetingService {
     });
   }
 
+  static async getMeetingsByRoomId(roomId) {
+    return Meeting.findAll({
+      where: { roomId },
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'firstName', 'lastName', 'username', 'email', 'role']
+        }
+      ],
+      order: [['startTime', 'ASC']],
+    });
+  }
+
   static async isRoomAvailable(roomId, startTime, endTime) {
     const overlappingMeeting = await Meeting.findOne({
       where: {

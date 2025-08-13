@@ -246,6 +246,7 @@ const { validateMeeting } = require('../middleware')
 router.get('/', authenticateToken, meetingController.getAllMeetings);
 router.get('/available', authenticateToken, meetingController.getAvailableRooms);
 router.get('/users/:id', authenticateToken, meetingController.getMeetingsByUserId);
+router.get('/rooms/:id', authenticateToken, meetingController.getMeetingsByRoomId);
 router.get('/:id', authenticateToken, meetingController.getMeetingById);
 router.post('/create', authenticateToken, validateMeeting, meetingController.createMeeting);
 router.put('/:id', authenticateToken, validateMeeting, meetingController.updateMeeting);
