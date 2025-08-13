@@ -31,61 +31,61 @@ exports.getMeetingById = async (req, res) => {
   }
 };
 
-exports.createMeeting = async (req, res) => {
-  const { roomId, startTime, endTime } = req.body;
-  let { title, description } = req.body;
-  const userId = req.user.id;
+  exports.createMeeting = async (req, res) => {
+    const { roomId, startTime, endTime } = req.body;
+    let { title, description } = req.body;
+    const userId = req.user.id;
 
-  if (!roomId || !startTime || !endTime) {
-    return res.status(400).json({ message: 'Nedostaju potrebni podaci.' });
-  }
-
-  const funnyTitles = [
-    "Another Email That Could've Been",
-    "Mandatory Fun Hour",
-    "Ctrl+Alt+Del Meeting",
-    "Who Scheduled This?",
-    "Brainstorming or Brain-Freezing?",
-    "We Could Be Sleeping",
-    "Quick Sync That Isn’t Quick",
-    "Meeting About Meetings",
-    "The Neverending Story",
-    "Free Donuts (Got Your Attention)",
-    "Someone Will Cry Today",
-    "Half the Team is Missing",
-    "Another Calendar Blocker",
-    "Bring Your Own Coffee",
-    "Oops, We Did It Again",
-    "90% Silence, 10% Awkward",
-    "No Agenda, No Problem",
-    "This Will Be Forwarded",
-    "Unmute Yourself Please",
-    "Hope You Like Surprises"
-  ];
-
-  let generatedTitle = false;
-
-  if (!title || title.trim() === '') {
-    title = funnyTitles[Math.floor(Math.random() * funnyTitles.length)];
-    generatedTitle = true;
-  }
-
-  if (generatedTitle) {
-    const disclaimer = "\n\n⚠️ Napomena: Naslov sastanka je automatski generiran za zabavu.";
-    description = description ? description + disclaimer : disclaimer;
-  }
-
-  try {
-    const meeting = await meetingService.createMeeting(userId, roomId, startTime, endTime, title, description);
-    return res.status(201).json({ message: 'Sastanak uspješno kreiran.', meeting });
-  } catch (error) {
-    if (error.message === 'Soba je zauzeta u zadanom vremenu.') {
-      return res.status(409).json({ message: error.message });
+    if (!roomId || !startTime || !endTime) {
+      return res.status(400).json({ message: 'Nedostaju potrebni podaci.' });
     }
-    console.error('Greška prilikom kreiranja sastanka:', error);
-    return res.status(500).json({ message: 'Greška na serveru.' });
-  }
-};
+
+    const funnyTitles = [
+      "Another Email That Could've Been",
+      "Mandatory Fun Hour",
+      "Ctrl+Alt+Del Meeting",
+      "Who Scheduled This?",
+      "Brainstorming or Brain-Freezing?",
+      "We Could Be Sleeping",
+      "Quick Sync That Isn’t Quick",
+      "Meeting About Meetings",
+      "The Neverending Story",
+      "Free Donuts (Got Your Attention)",
+      "Someone Will Cry Today",
+      "Half the Team is Missing",
+      "Another Calendar Blocker",
+      "Bring Your Own Coffee",
+      "Oops, We Did It Again",
+      "90% Silence, 10% Awkward",
+      "No Agenda, No Problem",
+      "This Will Be Forwarded",
+      "Unmute Yourself Please",
+      "Hope You Like Surprises"
+    ];
+
+    let generatedTitle = false;
+
+    if (!title || title.trim() === '') {
+      title = funnyTitles[Math.floor(Math.random() * funnyTitles.length)];
+      generatedTitle = true;
+    }
+
+    if (generatedTitle) {
+      const disclaimer = "\n\n⚠️ Napomena: Naslov sastanka je automatski generiran za zabavu.";
+      description = description ? description + disclaimer : disclaimer;
+    }
+
+    try {
+      const meeting = await meetingService.createMeeting(userId, roomId, startTime, endTime, title, description);
+      return res.status(201).json({ message: 'Sastanak uspješno kreiran.', meeting });
+    } catch (error) {
+      if (error.message === 'Soba je zauzeta u zadanom vremenu.') {
+        return res.status(409).json({ message: error.message });
+      }
+      console.error('Greška prilikom kreiranja sastanka:', error);
+      return res.status(500).json({ message: 'Greška na serveru.' });
+    }
+  };
 
 exports.updateMeeting = async (req, res) => {
   try {

@@ -34,7 +34,7 @@ class MeetingService {
     });
   }
 
-  static async createMeeting(userId, roomId, startTime, endTime, title) {
+  static async createMeeting(userId, roomId, startTime, endTime, title, description) {
     const available = await this.isRoomAvailable(roomId, startTime, endTime);
     if (!available) {
       throw new Error('Soba je zauzeta u zadanom vremenu.');

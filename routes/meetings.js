@@ -221,7 +221,7 @@ const { validateMeeting } = require('../middleware')
 
 /**
  * @swagger
- * /meetings/users/{id}/meetings:
+ * /meetings/users/{id}:
  *   get:
  *     summary: Get all meetings for a specific user
  *     tags: [Meetings]
