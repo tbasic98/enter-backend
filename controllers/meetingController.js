@@ -187,3 +187,51 @@ exports.getMeetingsByRoomId = async (req, res) => {
     res.status(500).json({ message: 'Greška na serveru.' });
   }
 };
+
+exports.handleRoomSensor = async (req, res) => {
+    let { roomId, title, description } = req.body;
+    if (!roomId) return res.status(400).json({ message: 'roomId required' });
+
+    try {
+      const funnyTitles = [
+        "Another Email That Could've Been",
+        "Mandatory Fun Hour",
+        "Ctrl+Alt+Del Meeting",
+        "Who Scheduled This?",
+        "Brainstorming or Brain-Freezing?",
+        "We Could Be Sleeping",
+        "Quick Sync That Isn’t Quick",
+        "Meeting About Meetings",
+        "The Neverending Story",
+        "Free Donuts (Got Your Attention)",
+        "Someone Will Cry Today",
+        "Half the Team is Missing",
+        "Another Calendar Blocker",
+        "Bring Your Own Coffee",
+        "Oops, We Did It Again",
+        "90% Silence, 10% Awkward",
+        "No Agenda, No Problem",
+        "This Will Be Forwarded",
+        "Unmute Yourself Please",
+        "Hope You Like Surprises"
+      ];
+
+      let generatedTitle = false;
+
+      if (!title || title.trim() === '') {
+        title = funnyTitles[Math.floor(Math.random() * funnyTitles.length)];
+        generatedTitle = true;
+      }
+
+      if (generatedTitle) {
+        const disclaimer = "\n\n⚠️ Napomena: Naslov sastanka je automatski generiran za zabavu.";
+        description = description ? description + disclaimer : disclaimer;
+      }
+
+      const meeting = await meetingService.handleRoomSensor(roomId, title, description);
+      res.json({ message: 'Room sensor processed', meeting });
+    } catch (error) {
+      console.error('Error processing room sensor:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }

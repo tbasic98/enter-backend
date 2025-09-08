@@ -1,8 +1,6 @@
 const { Op } = require('sequelize');
 const { Meeting, User, Room } = require('../models');
-
 class MeetingService {
-
   static async getAllMeetings({ startTime, endTime } = {}) {
     const where = {};
 
@@ -168,6 +166,43 @@ class MeetingService {
     });
 
     return !overlappingMeeting;
+  }
+
+  static async handleRoomSensor(roomId, title = null, description = null) {
+    if (!roomId) throw new Error('roomId is required');
+    const EVENT_DURATION_MIN = 15;
+    const EXTEND_THRESHOLD_MIN = 1;
+    const now = new Date();
+
+    const ongoingMeeting = await Meeting.findOne({
+      where: {
+        roomId,
+        startTime: { [Op.lte]: now },
+        endTime: { [Op.gte]: now },
+      },
+      order: [['endTime', 'DESC']],
+    });
+
+    if (ongoingMeeting) {
+      const minutesLeft = (ongoingMeeting.endTime - now) / 1000 / 60;
+      if (minutesLeft < EXTEND_THRESHOLD_MIN) {
+
+        const newEndTime = new Date(now.getTime() + EVENT_DURATION_MIN * 60 * 1000);
+        await ongoingMeeting.update({ endTime: newEndTime });
+      }
+      return ongoingMeeting;
+    } else {
+      const startTime = now;
+      const endTime = new Date(now.getTime() + EVENT_DURATION_MIN * 60 * 1000);
+      return await Meeting.create({
+        userId: 1,
+        roomId,
+        startTime,
+        endTime,
+        title: title,
+        description: description,
+      });
+    }
   }
 }
 

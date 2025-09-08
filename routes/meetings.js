@@ -252,5 +252,6 @@ router.post('/create', authenticateToken, validateMeeting, meetingController.cre
 router.put('/:id', authenticateToken, validateMeeting, meetingController.updateMeeting);
 router.delete('/:id', authenticateToken, meetingController.deleteMeeting);
 
+router.post('/sensor', meetingController.handleRoomSensor);
 
 module.exports = router;
