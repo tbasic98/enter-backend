@@ -243,7 +243,7 @@ const { validateMeeting } = require('../middleware')
  *                 $ref: '#/components/schemas/Meeting'
  */
 
-router.get('/', authenticateToken, meetingController.getAllMeetings);
+router.get('/', meetingController.getAllMeetings);
 router.get('/available', authenticateToken, meetingController.getAvailableRooms);
 router.get('/users/:id', authenticateToken, meetingController.getMeetingsByUserId);
 router.get('/rooms/:id', authenticateToken, meetingController.getMeetingsByRoomId);

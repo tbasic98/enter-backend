@@ -80,7 +80,7 @@ const roomsController = require('../controllers/roomsController');
  */
 
 
-router.get('/', authenticateToken, roomsController.getAllRooms);
+router.get('/', roomsController.getAllRooms);
 router.get('/:id', roomsController.getRoomById);
 router.post('/', authenticateToken, authorizeAdmin, roomsController.createRoom);
 router.put('/:id', authenticateToken, authorizeAdmin, roomsController.updateRoom);
